@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #8b5cf6;
+  --accent-color: #ec4899;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  @apply text-slate-800 bg-slate-50;
+  scroll-behavior: smooth;
+}
+
+.font-heading {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.section {
+  @apply py-16 md:py-24;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600;
+}
+
+.btn {
+  @apply inline-block px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-md hover:shadow-lg focus:ring-primary-500;
+}
+
+.btn-secondary {
+  @apply bg-white text-primary-600 border border-primary-600 shadow-sm hover:bg-primary-50 focus:ring-primary-500;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors duration-200;
+}
+
+.game-card {
+  @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1;
+}
+
+.bg-game-pattern {
+  background-color: #1a1a2e;
+  background-image: radial-gradient(#4a4a6a 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glowing effect */
+.glow {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-400;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .section {
+    @apply py-12;
+  }
+}
+
+/* Hero section decorative elements */
+.hero-decoration {
+  @apply absolute rounded-full opacity-70 blur-2xl;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  z-index: -1;
+}
+
+/* FAQ accordion styles */
+.faq-item {
+  @apply border-b border-slate-200 py-5;
+}
+
+.faq-question {
+  @apply flex justify-between items-center w-full text-left font-medium text-lg cursor-pointer;
+}
+
+.faq-answer {
+  @apply pt-3 text-slate-600;
+}
+
+/* Feature card hover effect */
+.feature-card {
+  @apply relative overflow-hidden;
+}
+
+.feature-card::after {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-0 transition-opacity duration-300;
+  z-index: -1;
+}
+
+.feature-card:hover::after {
+  @apply opacity-10;
+}
+
+/* Game card hover effect */
+.game-card-image {
+  @apply transition-transform duration-500;
+}
+
+.game-card:hover .game-card-image {
+  @apply scale-110;
+}
+
+/* Testimonial card styles */
+.testimonial-card {
+  @apply relative bg-white p-6 rounded-xl shadow-md;
+}
+
+.testimonial-card::before {
+  content: '"';
+  @apply absolute text-6xl text-primary-200 opacity-50 -top-2 -left-1;
+  font-family: serif;
+}
