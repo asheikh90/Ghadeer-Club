@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaDiscord, FaGamepad, FaShieldAlt, FaUsers, FaCheck } from 'react-icons/fa'
+import { supabase } from '../lib/supabase'
 
-const Hero = ({ isWaitlistSubmitted, setIsWaitlistSubmitted }) => {
+const Hero = ({ isWaitlistSubmitted, setIsWaitlistSubmitted, setWaitlistEntryId, setUserData }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -50,7 +51,7 @@ const Hero = ({ isWaitlistSubmitted, setIsWaitlistSubmitted }) => {
     setStep(1)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
@@ -62,13 +63,50 @@ const Hero = ({ isWaitlistSubmitted, setIsWaitlistSubmitted }) => {
       return
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Insert data into Supabase
+      const { data, error: supabaseError } = await supabase
+        .from('waitlist_entries')
+        .insert([
+          { 
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            wants_sms_updates: formData.wantsSmsUpdates,
+            area: formData.area,
+            preferred_game: formData.preferredGame
+          }
+        ])
+        .select()
+
+      if (supabaseError) {
+        console.error('Error submitting to Supabase:', supabaseError)
+        
+        // Check if it's a duplicate email error
+        if (supabaseError.code === '23505') {
+          setError('This email is already on our waitlist. Please use a different email.')
+        } else {
+          setError('There was an error submitting your information. Please try again.')
+        }
+        
+        setIsLoading(false)
+        return
+      }
+
+      // Save the waitlist entry ID for the quiz
+      if (data && data.length > 0) {
+        setWaitlistEntryId(data[0].id)
+        setUserData(formData)
+      }
+
       setIsWaitlistSubmitted(true)
-      // In a real app, you would send this data to your backend
-      console.log('Submitted:', formData)
-    }, 1500)
+      console.log('Submitted to Supabase:', data)
+    } catch (err) {
+      console.error('Error in submission process:', err)
+      setError('There was an error submitting your information. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const resetForm = () => {
@@ -171,231 +209,174 @@ const Hero = ({ isWaitlistSubmitted, setIsWaitlistSubmitted }) => {
               </div>
             </div>
 
-            {!isWaitlistSubmitted ? (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100"
-              >
-                <div className="flex items-center mb-6">
-                  <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full"
-                      style={{ width: step === 1 ? '50%' : '100%' }}
-                    ></div>
-                  </div>
-                  <div className="mx-4 text-sm font-medium text-slate-500">
-                    Step {step}/2
-                  </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100"
+            >
+              <div className="flex items-center mb-6">
+                <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full"
+                    style={{ width: step === 1 ? '50%' : '100%' }}
+                  ></div>
                 </div>
+                <div className="mx-4 text-sm font-medium text-slate-500">
+                  Step {step}/2
+                </div>
+              </div>
 
-                <h3 className="text-2xl font-bold mb-2 font-heading">Join Our Waitlist</h3>
-                <p className="text-slate-600 mb-6">Be the first to know when we launch!</p>
-                
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-100 text-red-600 flex items-center">
-                    <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
-                    </svg>
-                    {error}
+              <h3 className="text-2xl font-bold mb-2 font-heading">Join Our Waitlist</h3>
+              <p className="text-slate-600 mb-6">Be the first to know when we launch!</p>
+              
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-100 text-red-600 flex items-center">
+                  <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
+                  </svg>
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                {step === 1 && (
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+                        Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="Your full name"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="your.email@example.com"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="(Optional) For SMS updates"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="wantsSmsUpdates"
+                        name="wantsSmsUpdates"
+                        checked={formData.wantsSmsUpdates}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+                      />
+                      <label htmlFor="wantsSmsUpdates" className="ml-2 block text-sm text-slate-700">
+                        I would like to receive SMS updates about Ghadeer Club
+                      </label>
+                    </div>
+                    
+                    <div className="pt-4">
+                      <button
+                        type="button"
+                        onClick={nextStep}
+                        className="btn btn-primary w-full flex justify-center items-center"
+                      >
+                        Continue
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit}>
-                  {step === 1 && (
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                          Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="input-field"
-                          placeholder="Your full name"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-                          Email <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="input-field"
-                          placeholder="your.email@example.com"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className="input-field"
-                          placeholder="(Optional) For SMS updates"
-                        />
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="wantsSmsUpdates"
-                          name="wantsSmsUpdates"
-                          checked={formData.wantsSmsUpdates}
-                          onChange={handleChange}
-                          className="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
-                        />
-                        <label htmlFor="wantsSmsUpdates" className="ml-2 block text-sm text-slate-700">
-                          I would like to receive SMS updates about Ghadeer Club
-                        </label>
-                      </div>
-                      
-                      <div className="pt-4">
-                        <button
-                          type="button"
-                          onClick={nextStep}
-                          className="btn btn-primary w-full flex justify-center items-center"
-                        >
-                          Continue
-                        </button>
-                      </div>
+                {step === 2 && (
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="area" className="block text-sm font-medium text-slate-700 mb-1">
+                        Where are you joining from?
+                      </label>
+                      <select
+                        id="area"
+                        name="area"
+                        value={formData.area}
+                        onChange={handleChange}
+                        className="input-field"
+                      >
+                        <option value="">Select your region</option>
+                        {areaOptions.map((area) => (
+                          <option key={area} value={area}>{area}</option>
+                        ))}
+                      </select>
                     </div>
-                  )}
-
-                  {step === 2 && (
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="area" className="block text-sm font-medium text-slate-700 mb-1">
-                          Where are you joining from?
-                        </label>
-                        <select
-                          id="area"
-                          name="area"
-                          value={formData.area}
-                          onChange={handleChange}
-                          className="input-field"
-                        >
-                          <option value="">Select your region</option>
-                          {areaOptions.map((area) => (
-                            <option key={area} value={area}>{area}</option>
-                          ))}
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="preferredGame" className="block text-sm font-medium text-slate-700 mb-1">
-                          What game are you most interested in?
-                        </label>
-                        <select
-                          id="preferredGame"
-                          name="preferredGame"
-                          value={formData.preferredGame}
-                          onChange={handleChange}
-                          className="input-field"
-                        >
-                          <option value="">Select a game</option>
-                          {gameOptions.map((game) => (
-                            <option key={game} value={game}>{game}</option>
-                          ))}
-                        </select>
-                      </div>
-                      
-                      <div className="pt-4 flex space-x-4">
-                        <button
-                          type="button"
-                          onClick={prevStep}
-                          className="btn btn-secondary flex-1"
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="submit"
-                          className={`btn btn-primary flex-1 flex justify-center items-center ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? 'Processing...' : 'Join Waitlist'}
-                        </button>
-                      </div>
+                    
+                    <div>
+                      <label htmlFor="preferredGame" className="block text-sm font-medium text-slate-700 mb-1">
+                        What game are you most interested in?
+                      </label>
+                      <select
+                        id="preferredGame"
+                        name="preferredGame"
+                        value={formData.preferredGame}
+                        onChange={handleChange}
+                        className="input-field"
+                      >
+                        <option value="">Select a game</option>
+                        {gameOptions.map((game) => (
+                          <option key={game} value={game}>{game}</option>
+                        ))}
+                      </select>
                     </div>
-                  )}
+                    
+                    <div className="pt-4 flex space-x-4">
+                      <button
+                        type="button"
+                        onClick={prevStep}
+                        className="btn btn-secondary flex-1"
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        className={`btn btn-primary flex-1 flex justify-center items-center ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Processing...' : 'Join Waitlist'}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-                  <p className="text-xs text-center text-slate-500 mt-4">
-                    We respect your privacy and will never share your information.
-                  </p>
-                </form>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white p-8 rounded-2xl shadow-lg text-center border border-green-100"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                  <FaCheck className="w-8 h-8 text-green-500" />
-                </div>
-                <h3 className="text-2xl font-bold mb-2 font-heading">You're on the list!</h3>
-                <p className="text-slate-600 mb-6">
-                  Thank you for joining our waitlist. We'll notify you when Ghadeer Club launches!
+                <p className="text-xs text-center text-slate-500 mt-4">
+                  We respect your privacy and will never share your information.
                 </p>
-                <div className="bg-slate-50 p-4 rounded-lg mb-6">
-                  <div className="text-left mb-3">
-                    <p className="text-sm text-slate-500">Your information:</p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
-                    <div>
-                      <p className="text-xs text-slate-500">Name</p>
-                      <p className="font-medium">{formData.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-500">Email</p>
-                      <p className="font-medium">{formData.email}</p>
-                    </div>
-                    {formData.phone && (
-                      <div>
-                        <p className="text-xs text-slate-500">Phone</p>
-                        <p className="font-medium">{formData.phone}</p>
-                      </div>
-                    )}
-                    {formData.area && (
-                      <div>
-                        <p className="text-xs text-slate-500">Region</p>
-                        <p className="font-medium">{formData.area}</p>
-                      </div>
-                    )}
-                    {formData.preferredGame && (
-                      <div className="md:col-span-2">
-                        <p className="text-xs text-slate-500">Preferred Game</p>
-                        <p className="font-medium">{formData.preferredGame}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex justify-center space-x-4">
-                  <button 
-                    onClick={resetForm}
-                    className="text-primary-600 underline"
-                  >
-                    Add another email
-                  </button>
-                </div>
-              </motion.div>
-            )}
+              </form>
+            </motion.div>
           </motion.div>
 
           <motion.div 
