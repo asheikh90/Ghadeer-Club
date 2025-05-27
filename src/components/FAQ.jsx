@@ -40,6 +40,16 @@ const FAQ = () => {
     setActiveIndex(activeIndex === index ? null : index)
   }
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist')
+    if (waitlistSection) {
+      window.scrollTo({
+        top: waitlistSection.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <section id="faq" className="section bg-white">
       <div className="container">
@@ -113,9 +123,12 @@ const FAQ = () => {
               Join our waitlist today and be the first to know when Ghadeer Club launches. 
               Connect with fellow Shia gamers in a safe, moderated environment.
             </p>
-            <a href="#waitlist" className="btn bg-white text-primary-600 hover:bg-white/90">
+            <button 
+              onClick={scrollToWaitlist}
+              className="btn bg-white text-primary-600 hover:bg-white/90"
+            >
               Join the Waitlist
-            </a>
+            </button>
           </div>
         </motion.div>
       </div>

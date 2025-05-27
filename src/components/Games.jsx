@@ -80,6 +80,16 @@ const Games = () => {
     return matchesFilter && matchesSearch
   })
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist')
+    if (waitlistSection) {
+      window.scrollTo({
+        top: waitlistSection.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <section id="games" className="section bg-game-pattern bg-cover bg-center text-white">
       <div className="container">
@@ -166,9 +176,12 @@ const Games = () => {
                         <span key={i} className="text-primary-600">{platform}</span>
                       ))}
                     </div>
-                    <a href="#waitlist" className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors">
+                    <button 
+                      onClick={scrollToWaitlist}
+                      className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                    >
                       Join to Play →
-                    </a>
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -194,7 +207,12 @@ const Games = () => {
             <p className="text-slate-300 mb-6">
               Don't see your favorite game? Our community is constantly expanding! Join the waitlist and let us know what games you'd like to play.
             </p>
-            <a href="#waitlist" className="btn btn-primary">Join the Waitlist</a>
+            <button 
+              onClick={scrollToWaitlist}
+              className="btn btn-primary"
+            >
+              Join the Waitlist
+            </button>
           </div>
         </motion.div>
       </div>

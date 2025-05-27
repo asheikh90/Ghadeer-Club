@@ -33,6 +33,17 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId)
+    if (section) {
+      window.scrollTo({
+        top: section.offsetTop - 80,
+        behavior: 'smooth'
+      })
+      setIsMobileMenuOpen(false)
+    }
+  }
+
   const navItems = [
     { id: 'about', label: 'About' },
     { id: 'games', label: 'Games' },
@@ -51,7 +62,8 @@ const Header = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center"
+          className="flex items-center cursor-pointer"
+          onClick={() => scrollToSection('waitlist')}
         >
           <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-2 rounded-lg mr-3">
             <FaGamepad className="text-white text-xl" />
@@ -67,9 +79,9 @@ const Header = () => {
           className="hidden md:flex items-center space-x-1"
         >
           {navItems.map(item => (
-            <a 
+            <button 
               key={item.id}
-              href={`#${item.id}`} 
+              onClick={() => scrollToSection(item.id)}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 activeSection === item.id
                   ? 'text-primary-600 bg-primary-50 font-medium'
@@ -77,15 +89,15 @@ const Header = () => {
               }`}
             >
               {item.label}
-            </a>
+            </button>
           ))}
-          <a 
-            href="#waitlist" 
+          <button 
+            onClick={() => scrollToSection('waitlist')}
             className="ml-2 btn btn-primary flex items-center"
           >
             <FaDiscord className="mr-2" />
             Join Waitlist
-          </a>
+          </button>
         </motion.nav>
 
         {/* Mobile Menu Button */}
@@ -117,28 +129,26 @@ const Header = () => {
           >
             <div className="container py-4 flex flex-col space-y-1">
               {navItems.map(item => (
-                <a 
+                <button 
                   key={item.id}
-                  href={`#${item.id}`} 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  onClick={() => scrollToSection(item.id)}
+                  className={`px-4 py-3 rounded-lg transition-colors text-left ${
                     activeSection === item.id
                       ? 'text-primary-600 bg-primary-50 font-medium'
                       : 'text-slate-700 hover:text-primary-600 hover:bg-slate-50'
                   }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.label}
-                </a>
+                </button>
               ))}
               <div className="pt-2 mt-2 border-t border-slate-100">
-                <a 
-                  href="#waitlist" 
+                <button 
+                  onClick={() => scrollToSection('waitlist')}
                   className="btn btn-primary w-full flex items-center justify-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <FaDiscord className="mr-2" />
                   Join Waitlist
-                </a>
+                </button>
               </div>
             </div>
           </motion.div>

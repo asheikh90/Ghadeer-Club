@@ -3,6 +3,16 @@ import { FaDiscord, FaTwitter, FaInstagram, FaEnvelope, FaGamepad } from 'react-
 const Footer = () => {
   const currentYear = new Date().getFullYear()
 
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId)
+    if (section) {
+      window.scrollTo({
+        top: section.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <footer className="bg-slate-900 text-white pt-16 pb-8">
       <div className="container">
@@ -18,29 +28,64 @@ const Footer = () => {
               A safe, moderated gaming community for Shia Muslims of all ages. Connect, play, and grow with like-minded gamers in an environment that respects our values.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              <button className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                 <FaDiscord />
-              </a>
-              <a href="#" className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              </button>
+              <button className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                 <FaTwitter />
-              </a>
-              <a href="#" className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              </button>
+              <button className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                 <FaInstagram />
-              </a>
-              <a href="#" className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              </button>
+              <button className="bg-slate-800 hover:bg-primary-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                 <FaEnvelope />
-              </a>
+              </button>
             </div>
           </div>
           
           <div>
             <h3 className="text-lg font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#waitlist" className="text-slate-400 hover:text-white transition-colors">Join Waitlist</a></li>
-              <li><a href="#about" className="text-slate-400 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#games" className="text-slate-400 hover:text-white transition-colors">Games</a></li>
-              <li><a href="#features" className="text-slate-400 hover:text-white transition-colors">Features</a></li>
-              <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors">FAQ</a></li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('waitlist')}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  Join Waitlist
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('about')}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  About Us
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('games')}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  Games
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('features')}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  Features
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('faq')}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
             </ul>
           </div>
           
@@ -49,9 +94,12 @@ const Footer = () => {
             <p className="text-slate-400 mb-4">
               Have questions or suggestions? Reach out to us after joining the waitlist.
             </p>
-            <a href="#waitlist" className="inline-block px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">
+            <button 
+              onClick={() => scrollToSection('waitlist')}
+              className="inline-block px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
+            >
               Join Waitlist
-            </a>
+            </button>
           </div>
         </div>
         
@@ -60,9 +108,9 @@ const Footer = () => {
             &copy; {currentYear} Ghadeer Club. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">Privacy Policy</a>
-            <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">Terms of Service</a>
-            <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">Community Guidelines</a>
+            <button className="text-slate-500 hover:text-white text-sm transition-colors">Privacy Policy</button>
+            <button className="text-slate-500 hover:text-white text-sm transition-colors">Terms of Service</button>
+            <button className="text-slate-500 hover:text-white text-sm transition-colors">Community Guidelines</button>
           </div>
         </div>
       </div>

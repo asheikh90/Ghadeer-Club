@@ -8,6 +8,26 @@ const About = () => {
     { icon: <FaShieldAlt />, value: '100%', label: 'Safe Environment' }
   ]
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist')
+    if (waitlistSection) {
+      window.scrollTo({
+        top: waitlistSection.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      window.scrollTo({
+        top: featuresSection.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <section id="about" className="section bg-white">
       <div className="container">
@@ -53,12 +73,18 @@ const About = () => {
             </div>
             
             <div className="flex flex-wrap gap-4">
-              <a href="#waitlist" className="btn btn-primary">
+              <button 
+                onClick={scrollToWaitlist}
+                className="btn btn-primary"
+              >
                 Join Our Waitlist
-              </a>
-              <a href="#features" className="btn btn-secondary">
+              </button>
+              <button 
+                onClick={scrollToFeatures}
+                className="btn btn-secondary"
+              >
                 Explore Features
-              </a>
+              </button>
             </div>
           </motion.div>
           

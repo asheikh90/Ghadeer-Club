@@ -68,6 +68,16 @@ const Features = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   }
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist')
+    if (waitlistSection) {
+      window.scrollTo({
+        top: waitlistSection.offsetTop - 80,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <section id="features" className="section bg-slate-50 overflow-hidden">
       <div className="container">
@@ -108,9 +118,12 @@ const Features = () => {
               </div>
               <div className="p-6">
                 <p className="text-slate-600 mb-4">{feature.description}</p>
-                <a href="#waitlist" className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700 transition-colors">
+                <button 
+                  onClick={scrollToWaitlist}
+                  className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700 transition-colors"
+                >
                   Join Waitlist <FaChevronRight className="ml-1 text-sm" />
-                </a>
+                </button>
               </div>
             </motion.div>
           ))}
@@ -177,7 +190,12 @@ const Features = () => {
                 <span className="text-slate-700">Build lasting friendships with like-minded individuals</span>
               </li>
             </ul>
-            <a href="#waitlist" className="btn btn-primary">Join the Waitlist</a>
+            <button 
+              onClick={scrollToWaitlist}
+              className="btn btn-primary"
+            >
+              Join the Waitlist
+            </button>
           </div>
         </motion.div>
       </div>
